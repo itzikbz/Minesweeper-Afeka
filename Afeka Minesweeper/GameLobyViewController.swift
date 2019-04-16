@@ -86,7 +86,7 @@ extension GameLobyViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     // Number of columns of data
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
+        return 1 
     }
     
     // The number of rows of data
