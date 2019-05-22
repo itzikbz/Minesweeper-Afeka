@@ -18,6 +18,8 @@ class ViewController: UIViewController
     @IBOutlet weak var minesCollectionView: UICollectionView!
     @IBOutlet weak var minesLeftLabel: UILabel!
     
+    @IBOutlet weak var GameAnimation: UIImageView!
+
     //Game information
     var size = 0
     var mines = 0
@@ -33,16 +35,24 @@ class ViewController: UIViewController
     var cellsLeft = 0
     var bombsLeft = 0
     
+    //uiimage array for win and lose animations
+    var winnerImages: [UIImage] = []
+    var loserImages: [UIImage] = []
+  
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         //sets data
         cellsLeft = size * size - mines
         bombsLeft = mines
         minesLeftLabel.text = "Mines Left: \(bombsLeft)"
         mineArray = model.getMineArray(size: size, mines: mines)
         playerName.text = nickname
+        
+        //set the animation arrays
+        winnerImages = createImageArray(total: 11, imagePrefix: "tenor")
+        loserImages = createImageArray(total: 35, imagePrefix: "loser")
         
         //sets delegate and datasource
         minesCollectionView.delegate = self
@@ -73,7 +83,7 @@ class ViewController: UIViewController
         if(cell.isMine()) {
             bombDiscovered = true
             timer?.invalidate()
-            showGameoverAlert(message: "Game Lost")
+            showGameoverAlert(gameWon: false)
         } else {
             cellsLeft -= 1
         }
@@ -85,7 +95,7 @@ class ViewController: UIViewController
         if(cellsLeft == 0) {
             timer?.invalidate()
             addScoreToDB()
-            showGameoverAlert(message: "Game Won")
+            showGameoverAlert(gameWon: true)
         }
         
         //Check eight nearby possible cells if they are not mines
@@ -188,7 +198,15 @@ class ViewController: UIViewController
     }
     
     //show game over alert
-    func showGameoverAlert(message: String) {
+    func showGameoverAlert(gameWon: Bool) {
+        var message = "";
+        if gameWon {
+            message = "Game Won";
+            animate(imageView: GameAnimation, images: winnerImages)
+        } else {
+            message = "Game Lost";
+            animate(imageView: GameAnimation, images: loserImages)
+        }
         let gameOverMenu = UIAlertController(title: nil, message: message, preferredStyle: .actionSheet)
         let openScoreboardAction = UIAlertAction(title: "Go to Scores", style: .default, handler: openScoreView)
         let openMenuAction = UIAlertAction(title: "Go to Menu", style: .default, handler: openLobyView)
@@ -197,6 +215,26 @@ class ViewController: UIViewController
         self.present(gameOverMenu, animated: true, completion: nil)
     }
     
+    //Create an image array by its size(total) and prefix
+    func createImageArray(total: Int, imagePrefix: String) -> [UIImage] {
+        var imageArray: [UIImage] = []
+        
+        for imageCount in 0..<total {
+            let imageName = "\(imagePrefix)-\(imageCount).png"
+            let image =  UIImage(named: imageName)!
+            imageArray.append(image)
+        }
+        return imageArray;
+        
+    }
+    
+    //animates uiiamgeview with an animation
+    func animate(imageView: UIImageView, images: [UIImage]) {
+        imageView.animationImages = images
+        imageView.animationDuration = 1.0
+        imageView.animationRepeatCount = 10
+        imageView.startAnimating()
+    }
 }
 
 

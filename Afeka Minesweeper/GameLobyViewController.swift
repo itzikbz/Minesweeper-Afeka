@@ -29,8 +29,8 @@ class GameLobyViewController: UIViewController {
                                                     preferredStyle: .alert)
             let action = UIAlertAction(title: "Cancel", style: .cancel)
             alertController.addAction(action)
+            self.removeFromParent()
             self.present(alertController, animated: true, completion: nil)
-            return
         }
         
         //Decide the game information according to the chosen difficulty
@@ -56,6 +56,7 @@ class GameLobyViewController: UIViewController {
         
         //go to the game view
         performSegue(withIdentifier: "startGameSegue", sender: self)
+        
     }
     
 
